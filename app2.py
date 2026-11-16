@@ -11,6 +11,9 @@ class PlotWindow(QMainWindow):
         self.setWindowTitle("Data Plotter")
         self.resize(800, 600)
 
+        self.months_list = []
+        self.rainfall_list = []
+
         self.filename = None
 
         self.load_button = QPushButton("Load Data")
@@ -36,14 +39,19 @@ class PlotWindow(QMainWindow):
             "Data Files (*.csv *.txt);;All Files (*)",
         )
         if filename:
-            self.filename = filename
+            with open(filename, 'r') as f:
+                next(f)
+                for line in f:
+                    parts = line.split(",")
+                    self.months_list.append(parts[0])
+                    self.rainfall_list.append(int(parts[1]))
+            self.draw_graph()
 
-    def draw_graph(self, x_values, y_values):
+    def draw_graph(self):
         self.axes.clear()
-        self.axes.plot(x_values, y_values)
-        self.axes.set_xlabel("X")
-        self.axes.set_ylabel("Y")
-        self.axes.grid(True)
+        self.axes.bar(self.months_list, self.rainfall_list)
+        self.axes.set_title(self.filename)
+
         self.canvas.draw_idle()
 
 
